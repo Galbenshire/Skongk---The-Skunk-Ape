@@ -6,12 +6,12 @@
 [sub_resource type="RectangleShape2D" id=1]
 extents = Vector2( 8, 8 )
 
-[sub_resource type="CapsuleShape2D" id=4]
+[sub_resource type="CapsuleShape2D" id=2]
 radius = 8.0
 height = 32.0
 
-[sub_resource type="Animation" id=2]
-resource_name = "_init"
+[sub_resource type="Animation" id=3]
+length = 0.02
 step = 0.0166667
 tracks/0/type = "value"
 tracks/0/path = NodePath("Sprite:frame")
@@ -26,8 +26,7 @@ tracks/0/keys = {
 "values": [ 0 ]
 }
 
-[sub_resource type="Animation" id=3]
-resource_name = "punch"
+[sub_resource type="Animation" id=4]
 length = 0.766667
 step = 0.0166667
 tracks/0/type = "value"
@@ -49,8 +48,8 @@ tracks/1/loop_wrap = true
 tracks/1/imported = false
 tracks/1/enabled = true
 tracks/1/keys = {
-"times": PoolRealArray( 0, 0.266667, 0.766667 ),
-"transitions": PoolRealArray( 1, 1, 1 ),
+"times": PoolRealArray( 0, 0.266667, 0.58, 0.766667 ),
+"transitions": PoolRealArray( 1, 1, 1, 1 ),
 "values": [ {
 "args": [ false ],
 "method": "set_control_state"
@@ -60,6 +59,9 @@ tracks/1/keys = {
 }, {
 "args": [  ],
 "method": "end_punch"
+}, {
+"args": [ true ],
+"method": "set_control_state"
 } ]
 }
 
@@ -71,7 +73,6 @@ script = ExtResource( 1 )
 texture = ExtResource( 2 )
 offset = Vector2( 16, 0 )
 hframes = 2
-frame = 1
 
 [node name="FloorCollision" type="CollisionShape2D" parent="."]
 position = Vector2( 0, 8 )
@@ -85,10 +86,11 @@ collision_mask = 4
 
 [node name="Collision" type="CollisionShape2D" parent="Punch"]
 rotation = 1.5708
-shape = SubResource( 4 )
+shape = SubResource( 2 )
+disabled = true
 
 [node name="AnimationPlayer" type="AnimationPlayer" parent="."]
 autoplay = "_init"
 playback_process_mode = 0
-anims/_init = SubResource( 2 )
-anims/punch = SubResource( 3 )
+anims/_init = SubResource( 3 )
+anims/punch = SubResource( 4 )
