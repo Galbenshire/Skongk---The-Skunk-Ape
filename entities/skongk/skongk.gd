@@ -8,47 +8,73 @@ Skongk can do the following:
 	- Attack like a skunk.
 """
 
+enum States {IDLE, WALK, RUN, ATTACK}
+
 onready var SkongkSprite : Sprite = $Sprite
 onready var Punch : Area2D = $Punch
+onready var BackBlast : Area2D = $BackBlast
 
 export (float) var move_speed : float = 100.0
 export (float, 1.0, 5.0) var run_multiplier : float = 1.0
 
-var input_direction : Vector2
+var current_state : int = States.IDLE setget set_state
 var current_direction : int = 1
-var is_running : bool = false
+
+var _input_direction : Vector2
 
 func _unhandled_input(event : InputEvent) -> void:
-	if event.is_action_pressed("ui_accept"):
+	if event.is_action_pressed("skongk_punch"):
 		$AnimationPlayer.play("punch")
+	elif event.is_action_pressed("skongk_skunk_move"):
+		$AnimationPlayer.play("back_blast")
 
 func _physics_process(delta : float) -> void:
-	is_running = Input.is_action_pressed("ui_select")
-	
-	input_direction = Vector2.ZERO
-	input_direction.x = int(Input.is_action_pressed("ui_right")) - int(Input.is_action_pressed("ui_left"))
-	if !is_running:
-		input_direction.y = int(Input.is_action_pressed("ui_down")) - int(Input.is_action_pressed("ui_up"))
-	input_direction = input_direction.normalized()
-	
-	if input_direction.x and sign(input_direction.x) != current_direction:
-		# 'flip_h' is not used here because it doesn't flip around the offset
-		SkongkSprite.scale.x = sign(input_direction.x)
-		current_direction = sign(input_direction.x)
-	
-	var final_move_speed = move_speed * (run_multiplier if is_running else 1.0)
-	move_and_slide(input_direction * final_move_speed)
+	match current_state:
+		States.IDLE:
+			if Input.is_action_pressed("ui_left") or Input.is_action_pressed("ui_right") \
+					or Input.is_action_pressed("ui_down") or Input.is_action_pressed("ui_up"):
+				current_state = States.WALK
+		
+		States.WALK, States.RUN:
+			current_state = States.RUN if Input.is_action_pressed("skongk_run") else States.WALK
+			
+			_input_direction = Vector2.ZERO
+			_input_direction.x = int(Input.is_action_pressed("ui_right")) - int(Input.is_action_pressed("ui_left"))
+			if current_state == States.WALK:
+				_input_direction.y = int(Input.is_action_pressed("ui_down")) - int(Input.is_action_pressed("ui_up"))
+			_input_direction = _input_direction.normalized()
+			
+			if !_input_direction:
+				current_state = States.IDLE
+			else:
+				if _input_direction.x:
+					SkongkSprite.scale.x = sign(_input_direction.x)
+					current_direction = sign(_input_direction.x)
+				
+				var move_multiply = run_multiplier if current_state == States.RUN else 1.0
+				move_and_slide(_input_direction * move_speed * move_multiply)
 
-func set_control_state(controllable : bool) -> void:
-	set_physics_process(controllable)
-	set_process_unhandled_input(controllable)
+func set_state(new_state: int) -> void:
+	current_state = new_state
+	
+	var disable_controls = current_state != States.ATTACK
+	set_physics_process(disable_controls)
+	set_process_unhandled_input(disable_controls)
 
-func start_punch() -> void:
+func _start_punch() -> void:
 	Punch.get_node("Collision").set_deferred("disabled", false)
 	Punch.position.x = abs(Punch.position.x) * current_direction
 	print("Punch Started")
 
-func end_punch() -> void:
+func _end_punch() -> void:
 	Punch.get_node("Collision").set_deferred("disabled", true)
 	print("Punch Ended")
 
+func _start_back_blast() -> void:
+	BackBlast.get_node("Collision").set_deferred("disabled", false)
+	BackBlast.position.x = -abs(BackBlast.position.x) * current_direction
+	print("Back Blast Started")
+
+func _end_back_blast() -> void:
+	BackBlast.get_node("Collision").set_deferred("disabled", true)
+	print("Back Blast Ended")

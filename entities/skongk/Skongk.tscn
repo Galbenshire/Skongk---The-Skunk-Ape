@@ -1,4 +1,4 @@
-[gd_scene load_steps=7 format=2]
+[gd_scene load_steps=10 format=2]
 
 [ext_resource path="res://entities/skongk/skongk.gd" type="Script" id=1]
 [ext_resource path="res://entities/skongk/Skongk.png" type="Texture" id=2]
@@ -6,9 +6,16 @@
 [sub_resource type="RectangleShape2D" id=1]
 extents = Vector2( 8, 8 )
 
+[sub_resource type="CircleShape2D" id=5]
+radius = 12.0
+
 [sub_resource type="CapsuleShape2D" id=2]
 radius = 8.0
 height = 32.0
+
+[sub_resource type="CapsuleShape2D" id=6]
+radius = 16.0
+height = 96.0
 
 [sub_resource type="Animation" id=3]
 length = 0.02
@@ -24,6 +31,34 @@ tracks/0/keys = {
 "transitions": PoolRealArray( 1 ),
 "update": 1,
 "values": [ 0 ]
+}
+
+[sub_resource type="Animation" id=7]
+resource_name = "back_blast"
+length = 1.35
+step = 0.05
+tracks/0/type = "method"
+tracks/0/path = NodePath(".")
+tracks/0/interp = 1
+tracks/0/loop_wrap = true
+tracks/0/imported = false
+tracks/0/enabled = true
+tracks/0/keys = {
+"times": PoolRealArray( 0, 0.25, 0.35, 1.35 ),
+"transitions": PoolRealArray( 1, 1, 1, 1 ),
+"values": [ {
+"args": [ 3 ],
+"method": "set_state"
+}, {
+"args": [  ],
+"method": "_start_back_blast"
+}, {
+"args": [  ],
+"method": "_end_back_blast"
+}, {
+"args": [ 0 ],
+"method": "set_state"
+} ]
 }
 
 [sub_resource type="Animation" id=4]
@@ -51,17 +86,17 @@ tracks/1/keys = {
 "times": PoolRealArray( 0, 0.266667, 0.58, 0.766667 ),
 "transitions": PoolRealArray( 1, 1, 1, 1 ),
 "values": [ {
-"args": [ false ],
-"method": "set_control_state"
+"args": [ 3 ],
+"method": "set_state"
 }, {
 "args": [  ],
-"method": "start_punch"
+"method": "_start_punch"
 }, {
 "args": [  ],
-"method": "end_punch"
+"method": "_end_punch"
 }, {
-"args": [ true ],
-"method": "set_control_state"
+"args": [ 0 ],
+"method": "set_state"
 } ]
 }
 
@@ -73,10 +108,17 @@ script = ExtResource( 1 )
 texture = ExtResource( 2 )
 offset = Vector2( 16, 0 )
 hframes = 2
+frame = 1
 
 [node name="FloorCollision" type="CollisionShape2D" parent="."]
 position = Vector2( 0, 8 )
 shape = SubResource( 1 )
+
+[node name="Hurtbox" type="Area2D" parent="."]
+editor/display_folded = true
+
+[node name="Collision" type="CollisionShape2D" parent="Hurtbox"]
+shape = SubResource( 5 )
 
 [node name="Punch" type="Area2D" parent="."]
 editor/display_folded = true
@@ -89,8 +131,20 @@ rotation = 1.5708
 shape = SubResource( 2 )
 disabled = true
 
+[node name="BackBlast" type="Area2D" parent="."]
+editor/display_folded = true
+position = Vector2( -48, 0 )
+collision_layer = 0
+collision_mask = 4
+
+[node name="Collision" type="CollisionShape2D" parent="BackBlast"]
+rotation = 1.5708
+shape = SubResource( 6 )
+disabled = true
+
 [node name="AnimationPlayer" type="AnimationPlayer" parent="."]
 autoplay = "_init"
 playback_process_mode = 0
 anims/_init = SubResource( 3 )
+anims/back_blast = SubResource( 7 )
 anims/punch = SubResource( 4 )
