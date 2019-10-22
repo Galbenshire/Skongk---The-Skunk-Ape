@@ -3,18 +3,18 @@
 [ext_resource path="res://entities/skongk/skongk.gd" type="Script" id=1]
 [ext_resource path="res://entities/skongk/Skongk.png" type="Texture" id=2]
 
-[sub_resource type="CapsuleShape2D" id=3]
+[sub_resource type="CapsuleShape2D" id=1]
 radius = 8.0
 height = 16.0001
 
-[sub_resource type="CapsuleShape2D" id=4]
+[sub_resource type="CapsuleShape2D" id=2]
 radius = 16.0
 height = 96.0
 
-[sub_resource type="RectangleShape2D" id=1]
+[sub_resource type="RectangleShape2D" id=3]
 extents = Vector2( 12, 8 )
 
-[sub_resource type="Animation" id=5]
+[sub_resource type="Animation" id=4]
 length = 0.02
 step = 0.0166667
 tracks/0/type = "value"
@@ -30,10 +30,10 @@ tracks/0/keys = {
 "values": [ 0 ]
 }
 
-[sub_resource type="Animation" id=6]
+[sub_resource type="Animation" id=5]
 resource_name = "back_blast"
 length = 1.35
-step = 0.05
+step = 0.01
 tracks/0/type = "method"
 tracks/0/path = NodePath(".")
 tracks/0/interp = 1
@@ -47,11 +47,11 @@ tracks/0/keys = {
 "args": [ 3 ],
 "method": "set_state"
 }, {
-"args": [  ],
-"method": "_start_back_blast"
+"args": [ false ],
+"method": "_set_back_blast_hitbox_disabled"
 }, {
-"args": [  ],
-"method": "_end_back_blast"
+"args": [ true ],
+"method": "_set_back_blast_hitbox_disabled"
 }, {
 "args": [ 0 ],
 "method": "set_state"
@@ -70,9 +70,9 @@ tracks/1/keys = {
 "values": [ 2, 0 ]
 }
 
-[sub_resource type="Animation" id=7]
+[sub_resource type="Animation" id=6]
 length = 0.766667
-step = 0.0166667
+step = 0.01
 tracks/0/type = "value"
 tracks/0/path = NodePath("Sprite:frame")
 tracks/0/interp = 1
@@ -92,17 +92,17 @@ tracks/1/loop_wrap = true
 tracks/1/imported = false
 tracks/1/enabled = true
 tracks/1/keys = {
-"times": PoolRealArray( 0, 0.266667, 0.58, 0.766667 ),
+"times": PoolRealArray( 0, 0.26, 0.58, 0.766667 ),
 "transitions": PoolRealArray( 1, 1, 1, 1 ),
 "values": [ {
 "args": [ 3 ],
 "method": "set_state"
 }, {
-"args": [  ],
-"method": "_start_punch"
+"args": [ false ],
+"method": "_set_punch_hitbox_disabled"
 }, {
-"args": [  ],
-"method": "_end_punch"
+"args": [ true ],
+"method": "_set_punch_hitbox_disabled"
 }, {
 "args": [ 0 ],
 "method": "set_state"
@@ -131,7 +131,7 @@ collision_mask = 4
 [node name="Collision" type="CollisionShape2D" parent="Sprite/PunchHitbox"]
 position = Vector2( 16, -8 )
 rotation = 1.5708
-shape = SubResource( 3 )
+shape = SubResource( 1 )
 disabled = true
 
 [node name="BackBlastHitbox" type="Area2D" parent="Sprite"]
@@ -143,17 +143,17 @@ collision_mask = 4
 [node name="Collision" type="CollisionShape2D" parent="Sprite/BackBlastHitbox"]
 position = Vector2( -48, -8 )
 rotation = 1.5708
-shape = SubResource( 4 )
+shape = SubResource( 2 )
 disabled = true
 
 [node name="Collision" type="CollisionShape2D" parent="."]
-shape = SubResource( 1 )
+shape = SubResource( 3 )
 
 [node name="AnimationPlayer" type="AnimationPlayer" parent="."]
 autoplay = "_init"
 playback_process_mode = 0
-anims/_init = SubResource( 5 )
-anims/back_blast = SubResource( 6 )
-anims/punch = SubResource( 7 )
+anims/_init = SubResource( 4 )
+anims/back_blast = SubResource( 5 )
+anims/punch = SubResource( 6 )
 [connection signal="body_entered" from="Sprite/PunchHitbox" to="." method="_on_PunchHitbox_body_entered"]
 [connection signal="body_entered" from="Sprite/BackBlastHitbox" to="." method="_on_BackBlastHitbox_body_entered"]

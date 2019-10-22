@@ -5,8 +5,9 @@ Their behaviour might vary, but generally they'll try to move to a location arou
 attempting an attack every interval.
 """
 
-enum States {GO_TO_TARGET, IDLE, ATTACK}
+enum States {GO_TO_TARGET, IDLE, ATTACK, KNOCKBACK}
 
+export (int) var score_value : int = 50
 export (float) var move_speed : float = 60.0
 export (Vector2) var base_target_offset : Vector2
 export (Vector2) var offset_variance : Vector2
@@ -18,6 +19,7 @@ var _skongk_ref : KinematicBody2D
 var _target : Vector2
 var _target_offset : Vector2
 var _target_updates : int = 0
+var _knockback_direction : int = 1
 
 func _ready() -> void:
 	_get_skongk_reference()
@@ -46,6 +48,22 @@ func _physics_process(delta : float) -> void:
 		States.IDLE:
 			if position.distance_to(_target) > 32.0:
 				current_state = States.GO_TO_TARGET
+		
+		States.KNOCKBACK:
+			move_and_collide(400 * Vector2(_knockback_direction, 0) * delta)
+
+func knockback() -> void:
+	if current_state == States.KNOCKBACK:
+		return
+	
+	$Sprite.flip_v = true
+	current_state = States.KNOCKBACK
+	_skongk_ref.score += score_value
+	_knockback_direction = _skongk_ref.current_direction
+	$TargetUpdater.stop()
+	$AttackTimer.stop()
+	$AnimationPlayer.stop(true)
+	set_collision_mask_bit(0, false)
 
 func _update_target() -> void:
 	var new_offset = _target_offset
@@ -83,3 +101,7 @@ func _on_AnimationPlayer_animation_finished(anim_name : String) -> void:
 		current_state = States.IDLE
 		$TargetUpdater.start()
 		$AttackTimer.start()
+
+func _on_VisibilityEnabler_screen_exited():
+	if current_state == States.KNOCKBACK:
+		queue_free()

@@ -8,6 +8,10 @@ Skongk can do the following:
 	- Attack like a skunk.
 """
 
+signal score_changed(score)
+signal power_changed(power)
+signal awakeness_changed(awakeness)
+
 enum States {IDLE, WALK, RUN, ATTACK}
 
 onready var SkongkSprite : Sprite = $Sprite
@@ -17,8 +21,9 @@ onready var BackBlast : Area2D = $Sprite/BackBlastHitbox
 export (float) var move_speed : float = 100.0
 export (float, 1.0, 5.0) var run_multiplier : float = 1.0
 
-var score : int = 0
-var skunk_power : int = 16
+var score : int = 0 setget set_score
+var awakeness : int = 6 setget set_awakeness
+var skunk_power : int = 16 setget set_skunk_power
 
 var current_state : int = States.IDLE setget set_state
 var current_direction : int = 1
@@ -30,7 +35,7 @@ func _unhandled_input(event : InputEvent) -> void:
 		$AnimationPlayer.play("punch")
 	elif event.is_action_pressed("skongk_skunk_move"):
 		if skunk_power >= 4:
-			skunk_power = int(max(0, skunk_power - 4))
+			set_skunk_power(int(max(0, skunk_power - 4)))
 			$AnimationPlayer.play("back_blast")
 
 func _physics_process(delta : float) -> void:
@@ -59,6 +64,18 @@ func _physics_process(delta : float) -> void:
 				var move_multiply = run_multiplier if current_state == States.RUN else 1.0
 				move_and_slide(_input_direction * move_speed * move_multiply)
 
+func set_score(value : int) -> void:
+	score = value
+	emit_signal("score_changed", score)
+
+func set_awakeness(value : int) -> void:
+	awakeness = value
+	emit_signal("awakeness_changed", awakeness)
+
+func set_skunk_power(value : int) -> void:
+	skunk_power = value
+	emit_signal("power_changed", skunk_power)
+
 func set_state(new_state: int) -> void:
 	current_state = new_state
 	
@@ -66,24 +83,14 @@ func set_state(new_state: int) -> void:
 	set_physics_process(disable_controls)
 	set_process_unhandled_input(disable_controls)
 
-func _start_punch() -> void:
-	Punch.get_node("Collision").set_deferred("disabled", false)
-	print("Punch Started")
+func _set_punch_hitbox_disabled(disabled : bool) -> void:
+	Punch.get_node("Collision").set_deferred("disabled", disabled)
 
-func _end_punch() -> void:
-	Punch.get_node("Collision").set_deferred("disabled", true)
-	print("Punch Ended")
-
-func _start_back_blast() -> void:
-	BackBlast.get_node("Collision").set_deferred("disabled", false)
-	print("Back Blast Started")
-
-func _end_back_blast() -> void:
-	BackBlast.get_node("Collision").set_deferred("disabled", true)
-	print("Back Blast Ended")
+func _set_back_blast_hitbox_disabled(disabled : bool) -> void:
+	BackBlast.get_node("Collision").set_deferred("disabled", disabled)
 
 func _on_PunchHitbox_body_entered(body : PhysicsBody2D) -> void:
-	print("Punched something")
+	body.knockback()
 
 func _on_BackBlastHitbox_body_entered(body : PhysicsBody2D) -> void:
 	print("Something caught in the back blast")

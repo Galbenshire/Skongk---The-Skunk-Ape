@@ -14,6 +14,9 @@ length = 0.02
 collision_layer = 4
 script = ExtResource( 1 )
 
+[node name="VisibilityEnabler" type="VisibilityNotifier2D" parent="."]
+rect = Rect2( -10, -21, 20, 32 )
+
 [node name="Sprite" type="Sprite" parent="."]
 texture = ExtResource( 2 )
 offset = Vector2( 0, -8 )
@@ -34,6 +37,7 @@ one_shot = true
 [node name="AnimationPlayer" type="AnimationPlayer" parent="."]
 playback_process_mode = 0
 anims/attack = SubResource( 2 )
+[connection signal="screen_exited" from="VisibilityEnabler" to="." method="_on_VisibilityEnabler_screen_exited"]
 [connection signal="timeout" from="TargetUpdater" to="." method="_on_TargetUpdater_timeout"]
 [connection signal="timeout" from="AttackTimer" to="." method="_on_AttackTimer_timeout"]
 [connection signal="animation_finished" from="AnimationPlayer" to="." method="_on_AnimationPlayer_animation_finished"]

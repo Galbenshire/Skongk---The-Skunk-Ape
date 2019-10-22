@@ -1,7 +1,54 @@
-[gd_scene format=2]
+[gd_scene load_steps=3 format=2]
+
+[ext_resource path="res://ui/MainTheme.tres" type="Theme" id=1]
+[ext_resource path="res://ui/hud/hud.gd" type="Script" id=2]
 
 [node name="HUD" type="ColorRect"]
 margin_right = 288.0
 margin_bottom = 32.0
 rect_min_size = Vector2( 288, 32 )
+theme = ExtResource( 1 )
 color = Color( 0, 0, 0, 1 )
+script = ExtResource( 2 )
+
+[node name="Data" type="GridContainer" parent="."]
+anchor_right = 1.0
+anchor_bottom = 1.0
+margin_left = 8.0
+margin_top = 8.0
+margin_right = -8.0
+margin_bottom = -8.0
+columns = 2
+
+[node name="Score" type="Label" parent="Data"]
+margin_right = 136.0
+margin_bottom = 8.0
+size_flags_horizontal = 3
+text = "SCORE - 000000"
+
+[node name="HighScore" type="Label" parent="Data"]
+margin_left = 136.0
+margin_right = 272.0
+margin_bottom = 8.0
+size_flags_horizontal = 3
+text = "TOP - 000000"
+align = 2
+
+[node name="Awake" type="Label" parent="Data"]
+margin_top = 8.0
+margin_right = 136.0
+margin_bottom = 16.0
+size_flags_horizontal = 3
+text = "SKONGK- ZZZZZZ"
+
+[node name="Power" type="Control" parent="Data"]
+margin_left = 136.0
+margin_top = 8.0
+margin_right = 272.0
+margin_bottom = 16.0
+
+[node name="Text" type="Label" parent="Data/Power"]
+margin_left = 24.0
+margin_right = 64.0
+margin_bottom = 8.0
+text = "POW -"
