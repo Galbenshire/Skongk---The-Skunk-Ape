@@ -1,6 +1,7 @@
-[gd_scene load_steps=4 format=2]
+[gd_scene load_steps=5 format=2]
 
 [ext_resource path="res://entities/skongk/Skongk.tscn" type="PackedScene" id=1]
+[ext_resource path="res://entities/enemies/Enemy.tscn" type="PackedScene" id=2]
 
 [sub_resource type="RectangleShape2D" id=1]
 extents = Vector2( 144, 8 )
@@ -17,6 +18,9 @@ extents = Vector2( 8, 64 )
 [node name="Skongk" parent="Playfield/Entities" instance=ExtResource( 1 )]
 position = Vector2( 144, 144 )
 run_multiplier = 2.0
+
+[node name="Enemy" parent="Playfield/Entities" instance=ExtResource( 2 )]
+position = Vector2( 240, 144 )
 
 [node name="Boundaries" type="StaticBody2D" parent="Playfield"]
 editor/display_folded = true
@@ -39,5 +43,6 @@ position = Vector2( 288, 144 )
 shape = SubResource( 2 )
 
 [node name="GUI" type="Control" parent="."]
+visible = false
 anchor_right = 1.0
 anchor_bottom = 1.0
