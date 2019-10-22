@@ -20,7 +20,7 @@ position = Vector2( 144, 144 )
 run_multiplier = 2.0
 
 [node name="Enemy" parent="Playfield/Entities" instance=ExtResource( 2 )]
-position = Vector2( 240, 144 )
+position = Vector2( 224, 144 )
 
 [node name="Boundaries" type="StaticBody2D" parent="Playfield"]
 editor/display_folded = true

@@ -16,3 +16,9 @@ offset = Vector2( 0, -8 )
 
 [node name="Collision" type="CollisionShape2D" parent="."]
 shape = SubResource( 1 )
+
+[node name="TargetUpdater" type="Timer" parent="."]
+process_mode = 0
+wait_time = 0.35
+autostart = true
+[connection signal="timeout" from="TargetUpdater" to="." method="_on_TargetUpdater_timeout"]
