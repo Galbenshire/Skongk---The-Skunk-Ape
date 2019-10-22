@@ -1,10 +1,14 @@
-[gd_scene load_steps=4 format=2]
+[gd_scene load_steps=5 format=2]
 
 [ext_resource path="res://entities/enemies/enemy.gd" type="Script" id=1]
 [ext_resource path="res://entities/enemies/EnemyPlaceholder.png" type="Texture" id=2]
 
 [sub_resource type="RectangleShape2D" id=1]
 extents = Vector2( 8, 8 )
+
+[sub_resource type="Animation" id=2]
+resource_name = "attack"
+length = 0.02
 
 [node name="Enemy" type="KinematicBody2D"]
 collision_layer = 4
@@ -21,4 +25,15 @@ shape = SubResource( 1 )
 process_mode = 0
 wait_time = 0.35
 autostart = true
+
+[node name="AttackTimer" type="Timer" parent="."]
+process_mode = 0
+wait_time = 4.0
+one_shot = true
+
+[node name="AnimationPlayer" type="AnimationPlayer" parent="."]
+playback_process_mode = 0
+anims/attack = SubResource( 2 )
 [connection signal="timeout" from="TargetUpdater" to="." method="_on_TargetUpdater_timeout"]
+[connection signal="timeout" from="AttackTimer" to="." method="_on_AttackTimer_timeout"]
+[connection signal="animation_finished" from="AnimationPlayer" to="." method="_on_AnimationPlayer_animation_finished"]

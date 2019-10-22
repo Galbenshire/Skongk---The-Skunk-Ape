@@ -1,0 +1,7 @@
+[gd_scene format=2]
+
+[node name="HUD" type="ColorRect"]
+margin_right = 288.0
+margin_bottom = 32.0
+rect_min_size = Vector2( 288, 32 )
+color = Color( 0, 0, 0, 1 )
