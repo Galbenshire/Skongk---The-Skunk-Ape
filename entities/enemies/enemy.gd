@@ -1,107 +1,125 @@
 extends KinematicBody2D
 """
-This represents a character trying to encounter the Skunk Ape.
-Their behaviour might vary, but generally they'll try to move to a location around Skongk,
-attempting an attack every interval.
+This represents a character trying to get the Skunk Ape.
+This is a base class; it is expected to use scenes that inherit this,
+as opposed to using this scene itself.
+
+Enemies will try to move to a location relative to Skongk,
+updating this location every interval.
+Every now and again, they will perfrom an attack.
 """
 
-enum States {GO_TO_TARGET, IDLE, ATTACK, KNOCKBACK}
+enum States {SPAWN_INTRO, GO_TO_TARGET, IDLE, ATTACK, KNOCKBACK}
 
-export (int) var score_value : int = 50
+const SCORE_VALUE := 100
+
+onready var EnemySprite : Sprite = $Sprite
+onready var AnimPlayer : AnimationPlayer = $AnimationPlayer
+
 export (float) var move_speed : float = 60.0
+
 export (Vector2) var base_target_offset : Vector2
 export (Vector2) var offset_variance : Vector2
 export (bool) var face_target : bool = true
+export (int, 1, 16) var target_update_cap : int = 8
 
-var current_state : int = States.GO_TO_TARGET
-
-var _skongk_ref : KinematicBody2D
+var _skongk_ref : KinematicBody2D = null
+var _current_state : int = States.SPAWN_INTRO
+var _velocity : Vector2
 var _target : Vector2
 var _target_offset : Vector2
 var _target_updates : int = 0
-var _knockback_direction : int = 1
 
 func _ready() -> void:
-	_get_skongk_reference()
-	if !_skongk_ref:
-		_target = position
-		$TargetUpdater.stop()
-	else:
-		_update_target_offset()
-	$AttackTimer.start()
+	_get_reference_to_skongk()
+	_update_target_offset()
+	_update_target()
+	_enter_state(_current_state)
 
 func _draw() -> void:
-	draw_circle(to_local(_target), 5, Color.yellow)
+	draw_circle(to_local(_target), 5, Color.blueviolet)
 
-func _process(delta: float) -> void:
+func _process(delta):
 	update()
 
 func _physics_process(delta : float) -> void:
-	match current_state:
+	match _current_state:
+		States.IDLE:
+			EnemySprite.scale.x = _get_direction_towards_skongk()
+			
+			if position.distance_to(_target) > 32.0:
+				_change_state(States.GO_TO_TARGET)
+		
 		States.GO_TO_TARGET:
+			EnemySprite.scale.x = _get_direction_towards_skongk()
+			
 			if position.distance_to(_target) < 5.0:
-				current_state = States.IDLE
+				_change_state(States.IDLE)
 			else:
 				var target_angle = Vector2.RIGHT.rotated(get_angle_to(_target))
-				move_and_slide(target_angle * move_speed)
-		
-		States.IDLE:
-			if position.distance_to(_target) > 32.0:
-				current_state = States.GO_TO_TARGET
-		
-		States.KNOCKBACK:
-			move_and_collide(400 * Vector2(_knockback_direction, 0) * delta)
+				_velocity = target_angle * move_speed
+				move_and_slide(_velocity)
 
-func knockback() -> void:
-	if current_state == States.KNOCKBACK:
-		return
-	
-	$Sprite.flip_v = true
-	current_state = States.KNOCKBACK
-	_skongk_ref.score += score_value
-	_knockback_direction = _skongk_ref.current_direction
-	$TargetUpdater.stop()
-	$AttackTimer.stop()
-	$AnimationPlayer.stop(true)
-	set_collision_mask_bit(0, false)
+func _get_reference_to_skongk() -> void:
+	var skongk_group = get_tree().get_nodes_in_group("skongk")
+	if !skongk_group.empty():
+		_skongk_ref = skongk_group[0] #This should be fine. There can only ever be one 'skongk'.
+
+func _get_direction_towards_skongk() -> int:
+	if !_skongk_ref:
+		return int(EnemySprite.scale.x)
+		
+	var distance_difference = int(sign(_skongk_ref.position.x - position.x))
+	return distance_difference if distance_difference != 0 else int(EnemySprite.scale.x)
 
 func _update_target() -> void:
-	var new_offset = _target_offset
-	if face_target:
-		new_offset.x *= _skongk_ref.current_direction
-	
-	_target = _skongk_ref.position + new_offset
+	_target = position if !_skongk_ref else _skongk_ref.position
+	var offset_direction = 1 if !face_target else _skongk_ref.get_facing_direction()
+	_target += _target_offset * offset_direction
 
 func _update_target_offset() -> void:
 	_target_offset = base_target_offset
 	_target_offset.x += rand_range(-offset_variance.x, offset_variance.x)
 	_target_offset.y += rand_range(-offset_variance.y, offset_variance.y)
 
-func _get_skongk_reference() -> void:
-	var skongk_group = get_tree().get_nodes_in_group("skongk")
-	if !skongk_group.empty():
-		_skongk_ref = skongk_group[0]
+func _change_state(new_state : int) -> void:
+	_exit_state(_current_state)
+	_current_state = new_state
+	_enter_state(_current_state)
 
-func _on_TargetUpdater_timeout():
+func _enter_state(state : int) -> void:
+	match state:
+		States.SPAWN_INTRO:
+			var direction = _get_direction_towards_skongk()
+			$IntroTween.interpolate_property(self, "position:x", position.x, position.x + 40 * direction,
+					1.5, Tween.TRANS_LINEAR, Tween.EASE_IN_OUT)
+			$IntroTween.start()
+			EnemySprite.scale.x = direction
+		
+		States.ATTACK:
+			$TargetUpdater.stop()
+			$AnimationPlayer.play("attack")
+			print(name, ": Should attack")
+
+func _exit_state(state : int) -> void:
+	match state:
+		States.SPAWN_INTRO, States.ATTACK:
+			$TargetUpdater.start()
+			$AttackTimer.start()
+
+func _on_IntroTween_tween_all_completed() -> void:
+	_change_state(States.GO_TO_TARGET)
+
+func _on_TargetUpdater_timeout() -> void:
 	_update_target()
-	if _target_updates >= 4:
+	if _target_updates >= target_update_cap:
 		_update_target_offset()
 		_target_updates = 0
 	else:
 		_target_updates += 1
 
-func _on_AttackTimer_timeout():
-	current_state = States.ATTACK
-	$TargetUpdater.stop()
-	$AnimationPlayer.play("attack")
-	print("Enemy is attacking")
+func _on_AttackTimer_timeout() -> void:
+	_change_state(States.ATTACK)
 
-func _on_AnimationPlayer_animation_finished(anim_name : String) -> void:
-	if anim_name == "attack":
-		current_state = States.IDLE
-		$TargetUpdater.start()
-		$AttackTimer.start()
-
-func _on_VisibilityEnabler_screen_exited():
-	if current_state == States.KNOCKBACK:
-		queue_free()
+func _on_AnimationPlayer_animation_finished(anim_name : String):
+	_change_state(States.GO_TO_TARGET)

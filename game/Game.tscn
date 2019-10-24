@@ -25,12 +25,21 @@ texture = ExtResource( 2 )
 
 [node name="Skongk" parent="Playfield/Entities" instance=ExtResource( 3 )]
 position = Vector2( 144, 144 )
-run_multiplier = 2.0
 
 [node name="Enemy" parent="Playfield/Entities" instance=ExtResource( 4 )]
-position = Vector2( 224, 144 )
-base_target_offset = Vector2( 32, 0 )
-offset_variance = Vector2( 0, 32 )
+position = Vector2( 304, 144 )
+base_target_offset = Vector2( 24, 0 )
+offset_variance = Vector2( 8, 32 )
+
+[node name="Enemy2" parent="Playfield/Entities" instance=ExtResource( 4 )]
+position = Vector2( 304, 112 )
+base_target_offset = Vector2( 24, 0 )
+offset_variance = Vector2( 8, 32 )
+
+[node name="Enemy3" parent="Playfield/Entities" instance=ExtResource( 4 )]
+position = Vector2( 304, 176 )
+base_target_offset = Vector2( 24, 0 )
+offset_variance = Vector2( 8, 32 )
 
 [node name="Boundaries" type="StaticBody2D" parent="Playfield"]
 editor/display_folded = true
@@ -53,9 +62,8 @@ position = Vector2( 288, 144 )
 shape = SubResource( 2 )
 
 [node name="GUI" type="Control" parent="."]
+visible = false
 anchor_right = 1.0
 anchor_bottom = 1.0
 
 [node name="HUD" parent="GUI" instance=ExtResource( 5 )]
-[connection signal="power_changed" from="Playfield/Entities/Skongk" to="." method="_on_Skongk_power_changed"]
-[connection signal="score_changed" from="Playfield/Entities/Skongk" to="." method="_on_Skongk_score_changed"]

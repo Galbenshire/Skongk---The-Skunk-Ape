@@ -8,13 +8,18 @@ extents = Vector2( 8, 8 )
 
 [sub_resource type="Animation" id=2]
 resource_name = "attack"
-length = 0.02
 
-[node name="Enemy" type="KinematicBody2D"]
+[node name="Enemy" type="KinematicBody2D" groups=[
+"enemy",
+]]
+position = Vector2( -16, 80 )
 collision_layer = 4
 script = ExtResource( 1 )
+__meta__ = {
+"_edit_group_": true
+}
 
-[node name="VisibilityEnabler" type="VisibilityNotifier2D" parent="."]
+[node name="VisibilityNotifier" type="VisibilityNotifier2D" parent="."]
 rect = Rect2( -10, -21, 20, 32 )
 
 [node name="Sprite" type="Sprite" parent="."]
@@ -27,7 +32,6 @@ shape = SubResource( 1 )
 [node name="TargetUpdater" type="Timer" parent="."]
 process_mode = 0
 wait_time = 0.35
-autostart = true
 
 [node name="AttackTimer" type="Timer" parent="."]
 process_mode = 0
@@ -37,7 +41,10 @@ one_shot = true
 [node name="AnimationPlayer" type="AnimationPlayer" parent="."]
 playback_process_mode = 0
 anims/attack = SubResource( 2 )
-[connection signal="screen_exited" from="VisibilityEnabler" to="." method="_on_VisibilityEnabler_screen_exited"]
+
+[node name="IntroTween" type="Tween" parent="."]
+playback_process_mode = 0
 [connection signal="timeout" from="TargetUpdater" to="." method="_on_TargetUpdater_timeout"]
 [connection signal="timeout" from="AttackTimer" to="." method="_on_AttackTimer_timeout"]
 [connection signal="animation_finished" from="AnimationPlayer" to="." method="_on_AnimationPlayer_animation_finished"]
+[connection signal="tween_all_completed" from="IntroTween" to="." method="_on_IntroTween_tween_all_completed"]
