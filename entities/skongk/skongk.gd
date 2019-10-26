@@ -120,9 +120,13 @@ func _exit_state(state : int) -> void:
 		States.ATTACK:
 			set_physics_process(true)
 			set_process_unhandled_input(true)
+			_combo_hits = 0
 
 func _on_AttackHitbox_body_entered(body : PhysicsBody2D) -> void:
-	print("Enemy is caught in the hitbox")
+	_combo_hits += 1
+	set_score(score + body.SCORE_VALUE * _combo_hits)
+	print("Combo: ", _combo_hits, " | Score Gained: ", body.SCORE_VALUE * _combo_hits)
+	body.knockout()
 
 func _on_MoveAnimations_animation_finished(anim_name : String) -> void:
 	if anim_name.begins_with("attack"):

@@ -1,0 +1,15 @@
+[gd_scene load_steps=3 format=2]
+
+[ext_resource path="res://entities/skongk/Skongk.tscn" type="PackedScene" id=1]
+[ext_resource path="res://entities/enemies/targeting_system/TargetingSystem.tscn" type="PackedScene" id=2]
+
+[node name="Node" type="Node"]
+
+[node name="Skongk" parent="." instance=ExtResource( 1 )]
+position = Vector2( 144, 144 )
+
+[node name="TargetingSystem" parent="." instance=ExtResource( 2 )]
+position = Vector2( 16, 144 )
+x_offset = -32.0
+offset_variance = Vector2( 0, 16 )
+face_target = 2

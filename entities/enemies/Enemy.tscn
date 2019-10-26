@@ -1,29 +1,32 @@
-[gd_scene load_steps=5 format=2]
+[gd_scene load_steps=6 format=2]
 
 [ext_resource path="res://entities/enemies/enemy.gd" type="Script" id=1]
-[ext_resource path="res://entities/enemies/EnemyPlaceholder.png" type="Texture" id=2]
+[ext_resource path="res://entities/enemies/targeting_system/TargetingSystem.tscn" type="PackedScene" id=2]
+[ext_resource path="res://entities/enemies/EnemyPlaceholder.png" type="Texture" id=3]
 
 [sub_resource type="RectangleShape2D" id=1]
 extents = Vector2( 8, 8 )
 
 [sub_resource type="Animation" id=2]
 resource_name = "attack"
+length = 0.02
 
 [node name="Enemy" type="KinematicBody2D" groups=[
 "enemy",
 ]]
-position = Vector2( -16, 80 )
 collision_layer = 4
 script = ExtResource( 1 )
 __meta__ = {
 "_edit_group_": true
 }
 
+[node name="TargetingSystem" parent="." instance=ExtResource( 2 )]
+
 [node name="VisibilityNotifier" type="VisibilityNotifier2D" parent="."]
 rect = Rect2( -10, -21, 20, 32 )
 
 [node name="Sprite" type="Sprite" parent="."]
-texture = ExtResource( 2 )
+texture = ExtResource( 3 )
 offset = Vector2( 0, -8 )
 
 [node name="Collision" type="CollisionShape2D" parent="."]
@@ -44,6 +47,7 @@ anims/attack = SubResource( 2 )
 
 [node name="IntroTween" type="Tween" parent="."]
 playback_process_mode = 0
+[connection signal="screen_exited" from="VisibilityNotifier" to="." method="_on_VisibilityNotifier_screen_exited"]
 [connection signal="timeout" from="TargetUpdater" to="." method="_on_TargetUpdater_timeout"]
 [connection signal="timeout" from="AttackTimer" to="." method="_on_AttackTimer_timeout"]
 [connection signal="animation_finished" from="AnimationPlayer" to="." method="_on_AnimationPlayer_animation_finished"]

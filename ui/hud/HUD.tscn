@@ -11,44 +11,50 @@ theme = ExtResource( 1 )
 color = Color( 0, 0, 0, 1 )
 script = ExtResource( 2 )
 
-[node name="Data" type="GridContainer" parent="."]
-anchor_right = 1.0
-anchor_bottom = 1.0
-margin_left = 8.0
+[node name="ScoreLabels" type="Label" parent="."]
+margin_left = 16.0
 margin_top = 8.0
-margin_right = -8.0
-margin_bottom = -8.0
-columns = 2
-
-[node name="Score" type="Label" parent="Data"]
-margin_right = 136.0
-margin_bottom = 8.0
-size_flags_horizontal = 3
-text = "SCORE - 000000"
-
-[node name="HighScore" type="Label" parent="Data"]
-margin_left = 136.0
-margin_right = 272.0
-margin_bottom = 8.0
-size_flags_horizontal = 3
-text = "TOP - 000000"
+margin_right = 72.0
+margin_bottom = 27.0
+custom_constants/line_spacing = 0
+text = "SCORE -
+TOP -"
 align = 2
 
-[node name="Awake" type="Label" parent="Data"]
+[node name="PlayerScore" type="Label" parent="."]
+margin_left = 80.0
 margin_top = 8.0
-margin_right = 136.0
+margin_right = 128.0
 margin_bottom = 16.0
-size_flags_horizontal = 3
-text = "SKONGK- ZZZZZZ"
+text = "000000"
 
-[node name="Power" type="Control" parent="Data"]
-margin_left = 136.0
+[node name="HighScore" type="Label" parent="."]
+margin_left = 80.0
+margin_top = 16.0
+margin_right = 128.0
+margin_bottom = 24.0
+text = "000000"
+
+[node name="PlayerLabels" type="Label" parent="."]
+margin_left = 160.0
 margin_top = 8.0
-margin_right = 272.0
-margin_bottom = 16.0
+margin_right = 216.0
+margin_bottom = 27.0
+custom_constants/line_spacing = 0
+text = "SKONGK -
+POWER -"
+align = 2
 
-[node name="Text" type="Label" parent="Data/Power"]
-margin_left = 24.0
-margin_right = 64.0
-margin_bottom = 8.0
-text = "POW -"
+[node name="Awakeness" type="Label" parent="."]
+margin_left = 232.0
+margin_top = 8.0
+margin_right = 280.0
+margin_bottom = 16.0
+text = "ZZZ___"
+
+[node name="Power" type="Label" parent="."]
+margin_left = 232.0
+margin_top = 16.0
+margin_right = 280.0
+margin_bottom = 24.0
+text = "||||__"
