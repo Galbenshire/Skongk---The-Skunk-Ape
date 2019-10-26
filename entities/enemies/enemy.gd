@@ -11,6 +11,7 @@ Every now and again, they will perfrom an attack.
 
 enum States {SPAWN_INTRO, RETARGET, IDLE, ATTACK, KNOCKOUT, ENEMY_REBOUND}
 
+const PLAYER_SCORE_DATA : ScoreData = preload("res://scriptable_objects/PlayerScore.tres")
 const SCORE_VALUE := 100
 
 onready var TargetingSystem : Node2D = $TargetingSystem
@@ -59,6 +60,7 @@ func _process_state(delta : float) -> void:
 			if collision:
 				_change_state(States.ENEMY_REBOUND)
 				collision.collider.rebound()
+				PLAYER_SCORE_DATA.score += SCORE_VALUE * 2
 		
 		States.ENEMY_REBOUND:
 			_velocity.y += 900 * delta

@@ -8,9 +8,14 @@
 
 config_version=4
 
-_global_script_classes=[  ]
+_global_script_classes=[ {
+"base": "Resource",
+"class": "ScoreData",
+"language": "GDScript",
+"path": "res://scriptable_objects/score_data.gd"
+} ]
 _global_script_class_icons={
-
+"ScoreData": ""
 }
 
 [application]

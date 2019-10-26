@@ -2,6 +2,9 @@ extends Node
 
 func _ready():
 	randomize()
+	
+	var player_score = preload("res://scriptable_objects/PlayerScore.tres")
+	player_score.score = 0
 
 func _on_Skongk_power_changed(power : int) -> void:
 	$GUI/HUD.update_power(power)

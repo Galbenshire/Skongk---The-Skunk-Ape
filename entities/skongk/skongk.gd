@@ -15,6 +15,8 @@ signal awakeness_changed(awakeness)
 enum States {IDLE, MOVE, ATTACK, ASLEEP}
 enum Attacks {PUNCH, BACK_BLAST}
 
+const SCORE_DATA : ScoreData = preload("res://scriptable_objects/PlayerScore.tres")
+
 onready var SkongkSprite : Sprite = $Sprite
 onready var PunchHitbox = $Sprite/PunchHitbox/Collision
 onready var BackBlastHitbox = $Sprite/BackBlastHitbox/Collision
@@ -23,7 +25,6 @@ onready var MoveAnimations = $MoveAnimations
 export (float) var move_speed : float = 90.0
 export (float, 1.0, 5.0) var run_multiplier : float = 2.5
 
-var score : int = 0 setget set_score
 var awakeness : int = 6 setget set_awakeness
 var skunk_power : int = 16
 
@@ -64,10 +65,6 @@ func _physics_process(delta : float) -> void:
 					SkongkSprite.scale.x = _input_direction.x
 				
 				move_and_slide(move_direction * move_speed * multiplier)
-
-func set_score(value : int) -> void:
-	score = value
-	emit_signal("score_changed", score)
 
 func set_awakeness(value : int) -> void:
 	awakeness = value
@@ -124,7 +121,8 @@ func _exit_state(state : int) -> void:
 
 func _on_AttackHitbox_body_entered(body : PhysicsBody2D) -> void:
 	_combo_hits += 1
-	set_score(score + body.SCORE_VALUE * _combo_hits)
+	#set_score(score + body.SCORE_VALUE * _combo_hits)
+	SCORE_DATA.score += body.SCORE_VALUE * _combo_hits
 	print("Combo: ", _combo_hits, " | Score Gained: ", body.SCORE_VALUE * _combo_hits)
 	body.knockout()
 

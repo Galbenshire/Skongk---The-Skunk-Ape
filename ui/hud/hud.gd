@@ -1,16 +1,33 @@
 extends ColorRect
 
-var _highscore_ref : int = 1000
+const PLAYER_SCORE_DATA : ScoreData = preload("res://scriptable_objects/PlayerScore.tres")
+const HIGHSCORE_DATA_PATH := "user://HighScore.tres"
+
+var _highscore_data : ScoreData
 
 func _ready() -> void:
-	update_highscore(200)
-
-func update_score(score : int) -> void:
-	$PlayerScore.text = "%06d" % score
+	PLAYER_SCORE_DATA.connect("score_changed", self, "update_score")
 	
-	if score > _highscore_ref:
-		update_highscore(score)
+	load_highscore()
 
-func update_highscore(score : int) -> void:
-	$HighScore.text = "%06d" % score
-	_highscore_ref = score
+func update_score() -> void:
+	$PlayerScore.text = "%06d" % PLAYER_SCORE_DATA.score
+	
+	if PLAYER_SCORE_DATA.score > _highscore_data.score:
+		_highscore_data.score = PLAYER_SCORE_DATA.score
+		update_highscore()
+
+func update_highscore() -> void:
+	$HighScore.text = "%06d" % _highscore_data.score
+
+func load_highscore() -> void:
+	if ResourceLoader.exists(HIGHSCORE_DATA_PATH):
+		_highscore_data = load(HIGHSCORE_DATA_PATH)
+	else:
+		_highscore_data = ScoreData.new()
+		_highscore_data.score = 4000
+		ResourceSaver.save(HIGHSCORE_DATA_PATH, _highscore_data)
+	update_highscore()
+
+func save_highscore() -> void:
+	ResourceSaver.save(HIGHSCORE_DATA_PATH, _highscore_data)
