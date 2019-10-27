@@ -1,4 +1,4 @@
-[gd_scene load_steps=9 format=2]
+[gd_scene load_steps=12 format=2]
 
 [ext_resource path="res://entities/skongk/skongk.gd" type="Script" id=1]
 [ext_resource path="res://entities/skongk/Skongk.png" type="Texture" id=2]
@@ -28,6 +28,18 @@ tracks/0/keys = {
 "transitions": PoolRealArray( 1 ),
 "update": 1,
 "values": [ 0 ]
+}
+tracks/1/type = "value"
+tracks/1/path = NodePath("Sprite:offset")
+tracks/1/interp = 1
+tracks/1/loop_wrap = true
+tracks/1/imported = false
+tracks/1/enabled = true
+tracks/1/keys = {
+"times": PoolRealArray( 0 ),
+"transitions": PoolRealArray( 1 ),
+"update": 0,
+"values": [ Vector2( 8, -8 ) ]
 }
 
 [sub_resource type="Animation" id=5]
@@ -63,6 +75,18 @@ tracks/1/keys = {
 "method": "_set_back_blast_hitbox_disabled"
 } ]
 }
+tracks/2/type = "value"
+tracks/2/path = NodePath("Sprite:offset")
+tracks/2/interp = 1
+tracks/2/loop_wrap = true
+tracks/2/imported = false
+tracks/2/enabled = true
+tracks/2/keys = {
+"times": PoolRealArray( 0 ),
+"transitions": PoolRealArray( 1 ),
+"update": 0,
+"values": [ Vector2( 8, -8 ) ]
+}
 
 [sub_resource type="Animation" id=6]
 resource_name = "attack_punch"
@@ -96,6 +120,105 @@ tracks/1/keys = {
 "args": [ true ],
 "method": "_set_punch_hitbox_disabled"
 } ]
+}
+tracks/2/type = "value"
+tracks/2/path = NodePath("Sprite:offset")
+tracks/2/interp = 1
+tracks/2/loop_wrap = true
+tracks/2/imported = false
+tracks/2/enabled = true
+tracks/2/keys = {
+"times": PoolRealArray( 0 ),
+"transitions": PoolRealArray( 1 ),
+"update": 0,
+"values": [ Vector2( 8, -8 ) ]
+}
+
+[sub_resource type="Animation" id=7]
+resource_name = "idle"
+length = 0.02
+tracks/0/type = "value"
+tracks/0/path = NodePath("Sprite:frame")
+tracks/0/interp = 1
+tracks/0/loop_wrap = true
+tracks/0/imported = false
+tracks/0/enabled = true
+tracks/0/keys = {
+"times": PoolRealArray( 0 ),
+"transitions": PoolRealArray( 1 ),
+"update": 1,
+"values": [ 0 ]
+}
+tracks/1/type = "value"
+tracks/1/path = NodePath("Sprite:offset")
+tracks/1/interp = 1
+tracks/1/loop_wrap = true
+tracks/1/imported = false
+tracks/1/enabled = true
+tracks/1/keys = {
+"times": PoolRealArray( 0 ),
+"transitions": PoolRealArray( 1 ),
+"update": 0,
+"values": [ Vector2( 8, -8 ) ]
+}
+
+[sub_resource type="Animation" id=8]
+resource_name = "move"
+length = 0.4
+loop = true
+tracks/0/type = "value"
+tracks/0/path = NodePath("Sprite:frame")
+tracks/0/interp = 1
+tracks/0/loop_wrap = true
+tracks/0/imported = false
+tracks/0/enabled = true
+tracks/0/keys = {
+"times": PoolRealArray( 0 ),
+"transitions": PoolRealArray( 1 ),
+"update": 1,
+"values": [ 0 ]
+}
+tracks/1/type = "value"
+tracks/1/path = NodePath("Sprite:offset")
+tracks/1/interp = 1
+tracks/1/loop_wrap = true
+tracks/1/imported = false
+tracks/1/enabled = true
+tracks/1/keys = {
+"times": PoolRealArray( 0, 0.1 ),
+"transitions": PoolRealArray( 1, 1 ),
+"update": 1,
+"values": [ Vector2( 8, -8 ), Vector2( 8, -7 ) ]
+}
+
+[sub_resource type="Animation" id=9]
+resource_name = "stunned"
+length = 0.1
+loop = true
+step = 0.05
+tracks/0/type = "value"
+tracks/0/path = NodePath("Sprite:frame")
+tracks/0/interp = 1
+tracks/0/loop_wrap = true
+tracks/0/imported = false
+tracks/0/enabled = true
+tracks/0/keys = {
+"times": PoolRealArray( 0 ),
+"transitions": PoolRealArray( 1 ),
+"update": 1,
+"values": [ 0 ]
+}
+tracks/1/type = "value"
+tracks/1/path = NodePath("Sprite:offset")
+tracks/1/interp = 1
+tracks/1/loop_wrap = true
+tracks/1/imported = false
+tracks/1/enabled = true
+tracks/1/keys = {
+"times": PoolRealArray( 0, 0.05 ),
+"transitions": PoolRealArray( 1, 1 ),
+"update": 0,
+"values": [ Vector2( 7, -8 ), Vector2( 9, -8 ) ]
 }
 
 [node name="Skongk" type="KinematicBody2D" groups=[
@@ -142,6 +265,15 @@ playback_process_mode = 0
 anims/_init = SubResource( 4 )
 anims/attack_back_blast = SubResource( 5 )
 anims/attack_punch = SubResource( 6 )
+anims/idle = SubResource( 7 )
+anims/move = SubResource( 8 )
+anims/stunned = SubResource( 9 )
+
+[node name="StunTimer" type="Timer" parent="."]
+process_mode = 0
+wait_time = 2.0
+one_shot = true
 [connection signal="body_entered" from="Sprite/PunchHitbox" to="." method="_on_AttackHitbox_body_entered"]
 [connection signal="body_entered" from="Sprite/BackBlastHitbox" to="." method="_on_AttackHitbox_body_entered"]
 [connection signal="animation_finished" from="MoveAnimations" to="." method="_on_MoveAnimations_animation_finished"]
+[connection signal="timeout" from="StunTimer" to="." method="_on_StunTimer_timeout"]

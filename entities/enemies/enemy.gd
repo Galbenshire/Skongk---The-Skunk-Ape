@@ -20,10 +20,14 @@ onready var AnimPlayer : AnimationPlayer = $AnimationPlayer
 onready var TargetUpdater : Timer = $TargetUpdater
 
 export (float) var move_speed : float = 60.0
+export (float) var idle_min_range : float = 16.0
+export (float) var idle_max_range : float = 80.0
+export (String) var attack_animation : String = "attack"
 
 var _current_state : int = States.SPAWN_INTRO
 var _velocity : Vector2
 var _target_position : Vector2
+var _attacking_allowed : bool = false
 
 func _ready() -> void:
 	_enter_state(_current_state)
@@ -42,13 +46,18 @@ func _process_state(delta : float) -> void:
 		States.IDLE:
 			EnemySprite.scale.x = TargetingSystem.get_direction_to_target()
 			
-			if TargetingSystem.get_distance_to_target() < 16.0 or TargetingSystem.get_distance_to_target() > 80.0:
+			if _can_attack():
+				_change_state(States.ATTACK)
+			elif TargetingSystem.get_distance_to_target() < idle_min_range \
+					or TargetingSystem.get_distance_to_target() > idle_max_range:
 				_change_state(States.RETARGET)
 		
 		States.RETARGET:
 			EnemySprite.scale.x = TargetingSystem.get_direction_to_target()
 			
-			if TargetingSystem.get_distance_to_target() < 5.0:
+			if _can_attack():
+				_change_state(States.ATTACK)
+			elif TargetingSystem.get_distance_to_target() < 5.0:
 				_change_state(States.IDLE)
 			else:
 				var target_angle = global_position.direction_to(TargetingSystem.get_target_position())
@@ -65,6 +74,9 @@ func _process_state(delta : float) -> void:
 		States.ENEMY_REBOUND:
 			_velocity.y += 900 * delta
 			move_and_collide(_velocity * delta)
+
+func _can_attack() -> bool:
+	return _attacking_allowed
 
 func _change_state(new_state : int) -> void:
 	_exit_state(_current_state)
@@ -89,8 +101,9 @@ func _enter_state(state : int) -> void:
 			TargetingSystem.offset_variance = Vector2(8.0, 16.0)
 		
 		States.ATTACK:
+			_attacking_allowed = false
 			TargetUpdater.stop()
-			$AnimationPlayer.play("attack")
+			$AnimationPlayer.play(attack_animation)
 			print(name, ": Should attack")
 		
 		States.KNOCKOUT:
@@ -120,7 +133,7 @@ func _on_TargetUpdater_timeout() -> void:
 	_target_position = TargetingSystem.get_target_position()
 
 func _on_AttackTimer_timeout() -> void:
-	_change_state(States.ATTACK)
+	_attacking_allowed = true
 
 func _on_AnimationPlayer_animation_finished(anim_name : String) -> void:
 	_change_state(States.IDLE)

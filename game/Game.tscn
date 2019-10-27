@@ -3,7 +3,7 @@
 [ext_resource path="res://game/game.gd" type="Script" id=1]
 [ext_resource path="res://game/GameBackground.png" type="Texture" id=2]
 [ext_resource path="res://entities/skongk/Skongk.tscn" type="PackedScene" id=3]
-[ext_resource path="res://entities/enemies/Enemy.tscn" type="PackedScene" id=4]
+[ext_resource path="res://entities/enemies/hunter/Hunter.tscn" type="PackedScene" id=4]
 [ext_resource path="res://ui/hud/HUD.tscn" type="PackedScene" id=5]
 
 [sub_resource type="RectangleShape2D" id=1]
@@ -26,14 +26,8 @@ texture = ExtResource( 2 )
 [node name="Skongk" parent="Playfield/Entities" instance=ExtResource( 3 )]
 position = Vector2( 144, 144 )
 
-[node name="Enemy" parent="Playfield/Entities" instance=ExtResource( 4 )]
-position = Vector2( 304, 128 )
-
-[node name="Enemy2" parent="Playfield/Entities" instance=ExtResource( 4 )]
-position = Vector2( 304, 192 )
-
-[node name="Enemy3" parent="Playfield/Entities" instance=ExtResource( 4 )]
-position = Vector2( 304, 160 )
+[node name="Hunter" parent="Playfield/Entities" instance=ExtResource( 4 )]
+position = Vector2( 304, 144 )
 
 [node name="Boundaries" type="StaticBody2D" parent="Playfield"]
 editor/display_folded = true

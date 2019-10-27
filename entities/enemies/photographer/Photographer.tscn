@@ -1,0 +1,67 @@
+[gd_scene load_steps=5 format=2]
+
+[ext_resource path="res://entities/enemies/Enemy.tscn" type="PackedScene" id=1]
+[ext_resource path="res://entities/enemies/photographer/photographer.gd" type="Script" id=2]
+[ext_resource path="res://entities/enemies/photographer/PhotographerPlaceholder.png" type="Texture" id=3]
+
+[sub_resource type="Animation" id=1]
+resource_name = "attack_photographer"
+step = 0.01
+tracks/0/type = "value"
+tracks/0/path = NodePath("Sprite:frame")
+tracks/0/interp = 1
+tracks/0/loop_wrap = true
+tracks/0/imported = false
+tracks/0/enabled = true
+tracks/0/keys = {
+"times": PoolRealArray( 0, 0.2, 0.8, 0.85, 1 ),
+"transitions": PoolRealArray( 1, 1, 1, 1, 1 ),
+"update": 1,
+"values": [ 1, 2, 3, 2, 0 ]
+}
+tracks/1/type = "method"
+tracks/1/path = NodePath(".")
+tracks/1/interp = 1
+tracks/1/loop_wrap = true
+tracks/1/imported = false
+tracks/1/enabled = true
+tracks/1/keys = {
+"times": PoolRealArray( 0.8, 0.82 ),
+"transitions": PoolRealArray( 1, 1 ),
+"values": [ {
+"args": [ false ],
+"method": "_set_flash_hitbox_disabled"
+}, {
+"args": [ true ],
+"method": "_set_flash_hitbox_disabled"
+} ]
+}
+
+[node name="Photographer" instance=ExtResource( 1 )]
+script = ExtResource( 2 )
+attack_animation = "attack_photographer"
+
+[node name="TargetingSystem" parent="." index="0"]
+x_offset = 32.0
+offset_variance = Vector2( 8, 16 )
+
+[node name="Sprite" parent="." index="2"]
+editor/display_folded = true
+texture = ExtResource( 3 )
+hframes = 4
+
+[node name="FlashHitbox" type="Area2D" parent="Sprite" index="0"]
+editor/display_folded = true
+collision_layer = 0
+collision_mask = 2
+
+[node name="Collision" type="CollisionPolygon2D" parent="Sprite/FlashHitbox" index="0"]
+polygon = PoolVector2Array( 64, -73, 64, 48, -5, -7, -5, -18 )
+disabled = true
+
+[node name="AttackTimer" parent="." index="5"]
+wait_time = 3.0
+
+[node name="AnimationPlayer" parent="." index="6"]
+anims/attack_photographer = SubResource( 1 )
+[connection signal="body_entered" from="Sprite/FlashHitbox" to="." method="_on_FlashHitbox_body_entered"]

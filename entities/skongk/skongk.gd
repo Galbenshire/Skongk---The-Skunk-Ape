@@ -18,9 +18,9 @@ enum Attacks {PUNCH, BACK_BLAST}
 const SCORE_DATA : ScoreData = preload("res://scriptable_objects/PlayerScore.tres")
 
 onready var SkongkSprite : Sprite = $Sprite
-onready var PunchHitbox = $Sprite/PunchHitbox/Collision
-onready var BackBlastHitbox = $Sprite/BackBlastHitbox/Collision
-onready var MoveAnimations = $MoveAnimations
+onready var PunchHitbox : CollisionShape2D = $Sprite/PunchHitbox/Collision
+onready var BackBlastHitbox : CollisionShape2D = $Sprite/BackBlastHitbox/Collision
+onready var MoveAnimations : AnimationPlayer = $MoveAnimations
 
 export (float) var move_speed : float = 90.0
 export (float, 1.0, 5.0) var run_multiplier : float = 2.5
@@ -77,6 +77,14 @@ func set_skunk_power(value : int) -> void:
 func get_facing_direction() -> int:
 	return int(SkongkSprite.scale.x)
 
+func stun() -> void:
+	if $StunTimer.is_stopped():
+		_change_state(States.IDLE)
+		set_physics_process(false)
+		set_process_unhandled_input(false)
+		MoveAnimations.play("stunned")
+		$StunTimer.start()
+
 func _get_input_direction() -> void:
 	_input_direction = Vector2.ZERO
 	_input_direction.x = int(Input.is_action_pressed("ui_right")) - int(Input.is_action_pressed("ui_left"))
@@ -102,10 +110,10 @@ func _change_state(new_state : int) -> void:
 func _enter_state(state : int) -> void:
 	match state:
 		States.IDLE:
-			print(name, ": Should play idle animation")
+			MoveAnimations.play("idle")
 		
 		States.MOVE:
-			print(name, ": Should play move animation")
+			MoveAnimations.play("move")
 		
 		States.ATTACK:
 			set_physics_process(false)
@@ -115,13 +123,16 @@ func _enter_state(state : int) -> void:
 func _exit_state(state : int) -> void:
 	match state:
 		States.ATTACK:
+			if !PunchHitbox.disabled:
+				_set_punch_hitbox_disabled(true)
+			if !BackBlastHitbox.disabled:
+				_set_back_blast_hitbox_disabled(true)
 			set_physics_process(true)
 			set_process_unhandled_input(true)
 			_combo_hits = 0
 
 func _on_AttackHitbox_body_entered(body : PhysicsBody2D) -> void:
 	_combo_hits += 1
-	#set_score(score + body.SCORE_VALUE * _combo_hits)
 	SCORE_DATA.score += body.SCORE_VALUE * _combo_hits
 	print("Combo: ", _combo_hits, " | Score Gained: ", body.SCORE_VALUE * _combo_hits)
 	body.knockout()
@@ -129,3 +140,8 @@ func _on_AttackHitbox_body_entered(body : PhysicsBody2D) -> void:
 func _on_MoveAnimations_animation_finished(anim_name : String) -> void:
 	if anim_name.begins_with("attack"):
 		_change_state(States.IDLE)
+
+func _on_StunTimer_timeout():
+	set_physics_process(true)
+	set_process_unhandled_input(true)
+	MoveAnimations.play("idle")
