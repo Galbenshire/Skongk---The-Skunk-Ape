@@ -12,12 +12,14 @@ Every now and again, they will perfrom an attack.
 enum States {SPAWN_INTRO, RETARGET, IDLE, ATTACK, KNOCKOUT, ENEMY_REBOUND}
 
 const PLAYER_SCORE_DATA : ScoreData = preload("res://scriptable_objects/PlayerScore.tres")
+const SCORE_POP_SCENE := preload("res://effects/ScorePop.tscn")
 const SCORE_VALUE := 100
 
 onready var TargetingSystem : Node2D = $TargetingSystem
 onready var EnemySprite : Sprite = $Sprite
 onready var AnimPlayer : AnimationPlayer = $AnimationPlayer
 onready var TargetUpdater : Timer = $TargetUpdater
+onready var VisNotifier : VisibilityNotifier2D = $VisibilityNotifier
 
 export (float) var move_speed : float = 60.0
 export (float) var idle_min_range : float = 16.0
@@ -34,12 +36,19 @@ func _ready() -> void:
 
 func _physics_process(delta : float) -> void:
 	_process_state(delta)
+	
+	if _current_state != States.SPAWN_INTRO:
+		if !VisNotifier.is_on_screen():
+			print(name, ": Removed")
+			queue_free()
 
 func knockout() -> void:
 	_change_state(States.KNOCKOUT)
+	AnimPlayer.stop()
 
 func rebound() -> void:
 	_change_state(States.ENEMY_REBOUND)
+	AnimPlayer.stop()
 
 func _process_state(delta : float) -> void:
 	match _current_state:
@@ -69,6 +78,7 @@ func _process_state(delta : float) -> void:
 			if collision:
 				_change_state(States.ENEMY_REBOUND)
 				collision.collider.rebound()
+				_pop_score(collision.position, SCORE_VALUE * 2)
 				PLAYER_SCORE_DATA.score += SCORE_VALUE * 2
 		
 		States.ENEMY_REBOUND:
@@ -77,6 +87,12 @@ func _process_state(delta : float) -> void:
 
 func _can_attack() -> bool:
 	return _attacking_allowed
+
+func _pop_score(pop_position : Vector2, value : int) -> void:
+	var score_pop = SCORE_POP_SCENE.instance()
+	score_pop.value = value
+	score_pop.global_position = pop_position
+	get_parent().add_child(score_pop)
 
 func _change_state(new_state : int) -> void:
 	_exit_state(_current_state)
@@ -87,9 +103,11 @@ func _enter_state(state : int) -> void:
 	match state:
 		States.SPAWN_INTRO:
 			var direction = TargetingSystem.get_direction_to_target()
-			$IntroTween.interpolate_property(self, "position:x", position.x, position.x + 40 * direction,
+			var intro_tween = $IntroTween
+			intro_tween.interpolate_property(self, "position:x", position.x, position.x + 40 * direction,
 					1.5, Tween.TRANS_LINEAR, Tween.EASE_IN_OUT)
-			$IntroTween.start()
+			intro_tween.interpolate_callback(self, 1.5, "_change_state", States.IDLE)
+			intro_tween.start()
 			EnemySprite.scale.x = direction
 		
 		States.IDLE:
@@ -122,12 +140,15 @@ func _enter_state(state : int) -> void:
 
 func _exit_state(state : int) -> void:
 	match state:
-		States.SPAWN_INTRO, States.ATTACK:
+		States.SPAWN_INTRO:
 			TargetUpdater.start()
 			$AttackTimer.start()
-
-func _on_IntroTween_tween_all_completed() -> void:
-	_change_state(States.IDLE)
+			if $IntroTween.is_active():
+				$IntroTween.stop_all()
+		
+		States.Attack:
+			TargetUpdater.start()
+			$AttackTimer.start()
 
 func _on_TargetUpdater_timeout() -> void:
 	_target_position = TargetingSystem.get_target_position()
@@ -137,7 +158,3 @@ func _on_AttackTimer_timeout() -> void:
 
 func _on_AnimationPlayer_animation_finished(anim_name : String) -> void:
 	_change_state(States.IDLE)
-
-func _on_VisibilityNotifier_screen_exited() -> void:
-	if _current_state == States.KNOCKOUT or _current_state == States.ENEMY_REBOUND:
-		queue_free()

@@ -12,5 +12,5 @@ func _on_VisibilityNotifier_screen_exited() -> void:
 	queue_free()
 
 func _on_HunterBullet_body_entered(body : PhysicsBody2D) -> void:
-	print("Bullet kit Skongk")
+	body.awakeness -= 1
 	queue_free()

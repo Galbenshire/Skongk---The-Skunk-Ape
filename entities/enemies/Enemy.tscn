@@ -60,8 +60,6 @@ anims/attack = SubResource( 2 )
 
 [node name="IntroTween" type="Tween" parent="."]
 playback_process_mode = 0
-[connection signal="screen_exited" from="VisibilityNotifier" to="." method="_on_VisibilityNotifier_screen_exited"]
 [connection signal="timeout" from="TargetUpdater" to="." method="_on_TargetUpdater_timeout"]
 [connection signal="timeout" from="AttackTimer" to="." method="_on_AttackTimer_timeout"]
 [connection signal="animation_finished" from="AnimationPlayer" to="." method="_on_AnimationPlayer_animation_finished"]
-[connection signal="tween_all_completed" from="IntroTween" to="." method="_on_IntroTween_tween_all_completed"]

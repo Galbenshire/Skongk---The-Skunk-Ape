@@ -1,7 +1,10 @@
-[gd_scene load_steps=3 format=2]
+[gd_scene load_steps=6 format=2]
 
 [ext_resource path="res://ui/MainTheme.tres" type="Theme" id=1]
 [ext_resource path="res://ui/hud/hud.gd" type="Script" id=2]
+[ext_resource path="res://ui/hud/components/TiledBar.tscn" type="PackedScene" id=3]
+[ext_resource path="res://ui/hud/AwakeBar.png" type="Texture" id=4]
+[ext_resource path="res://ui/hud/PowerBar.png" type="Texture" id=5]
 
 [node name="HUD" type="ColorRect"]
 margin_right = 288.0
@@ -45,16 +48,24 @@ text = "SKONGK -
 POWER -"
 align = 2
 
-[node name="Awakeness" type="Label" parent="."]
+[node name="Awakeness" parent="." instance=ExtResource( 3 )]
 margin_left = 232.0
 margin_top = 8.0
 margin_right = 280.0
 margin_bottom = 16.0
-text = "ZZZ___"
+rect_min_size = Vector2( 48, 8 )
+texture = ExtResource( 4 )
+texture_region = Vector2( 8, 8 )
+max_value = 6
+color = Color( 0.254902, 0.254902, 1, 1 )
 
-[node name="Power" type="Label" parent="."]
+[node name="Power" parent="." instance=ExtResource( 3 )]
 margin_left = 232.0
 margin_top = 16.0
 margin_right = 280.0
 margin_bottom = 24.0
-text = "||||__"
+rect_min_size = Vector2( 48, 8 )
+texture = ExtResource( 5 )
+texture_region = Vector2( 4, 8 )
+max_value = 12
+color = Color( 0.921569, 0.827451, 0.12549, 1 )

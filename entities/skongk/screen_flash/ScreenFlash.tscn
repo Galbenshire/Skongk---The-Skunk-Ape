@@ -1,0 +1,18 @@
+[gd_scene load_steps=3 format=2]
+
+[ext_resource path="res://entities/skongk/screen_flash/screen_flash.gd" type="Script" id=1]
+[ext_resource path="res://SinglePixel.png" type="Texture" id=2]
+
+[node name="ScreenFlash" type="Node"]
+script = ExtResource( 1 )
+
+[node name="Screen" type="Sprite" parent="."]
+visible = false
+scale = Vector2( 288, 224 )
+texture = ExtResource( 2 )
+centered = false
+
+[node name="Duration" type="Timer" parent="."]
+wait_time = 0.25
+one_shot = true
+[connection signal="timeout" from="Duration" to="." method="_on_Duration_timeout"]

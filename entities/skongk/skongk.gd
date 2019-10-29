@@ -16,7 +16,9 @@ enum States {IDLE, MOVE, ATTACK, ASLEEP}
 enum Attacks {PUNCH, BACK_BLAST}
 
 const SCORE_DATA : ScoreData = preload("res://scriptable_objects/PlayerScore.tres")
+const SCORE_POP_SCENE := preload("res://effects/ScorePop.tscn")
 
+onready var ScreenFlash := $ScreenFlash
 onready var SkongkSprite : Sprite = $Sprite
 onready var PunchHitbox : CollisionShape2D = $Sprite/PunchHitbox/Collision
 onready var BackBlastHitbox : CollisionShape2D = $Sprite/BackBlastHitbox/Collision
@@ -26,7 +28,7 @@ export (float) var move_speed : float = 90.0
 export (float, 1.0, 5.0) var run_multiplier : float = 2.5
 
 var awakeness : int = 6 setget set_awakeness
-var skunk_power : int = 16
+var skunk_power : int = 12 setget set_skunk_power
 
 var _current_state : int = States.IDLE
 var _last_attack_used : int = Attacks.PUNCH
@@ -39,7 +41,7 @@ func _unhandled_input(event : InputEvent) -> void:
 		_change_state(States.ATTACK)
 	elif event.is_action_pressed("skongk_skunk_move"):
 		if skunk_power >= 4:
-			skunk_power -= 4
+			set_skunk_power(skunk_power - 3)
 			_last_attack_used = Attacks.BACK_BLAST
 			_change_state(States.ATTACK)
 
@@ -67,11 +69,11 @@ func _physics_process(delta : float) -> void:
 				move_and_slide(move_direction * move_speed * multiplier)
 
 func set_awakeness(value : int) -> void:
-	awakeness = value
+	awakeness = int(clamp(value, 0, 6))
 	emit_signal("awakeness_changed", awakeness)
 
 func set_skunk_power(value : int) -> void:
-	skunk_power = value
+	skunk_power = int(clamp(value, 0, 12))
 	emit_signal("power_changed", skunk_power)
 
 func get_facing_direction() -> int:
@@ -79,6 +81,7 @@ func get_facing_direction() -> int:
 
 func stun() -> void:
 	if $StunTimer.is_stopped():
+		ScreenFlash.flash()
 		_change_state(States.IDLE)
 		set_physics_process(false)
 		set_process_unhandled_input(false)
@@ -101,6 +104,12 @@ func _set_punch_hitbox_disabled(disabled : bool) -> void:
 
 func _set_back_blast_hitbox_disabled(disabled : bool) -> void:
 	BackBlastHitbox.set_deferred("disabled", disabled)
+
+func _pop_score(pop_position : Vector2, value : int) -> void:
+	var score_pop = SCORE_POP_SCENE.instance()
+	score_pop.value = value
+	score_pop.global_position = pop_position
+	get_parent().add_child(score_pop)
 
 func _change_state(new_state : int) -> void:
 	_exit_state(_current_state)
@@ -133,6 +142,7 @@ func _exit_state(state : int) -> void:
 
 func _on_AttackHitbox_body_entered(body : PhysicsBody2D) -> void:
 	_combo_hits += 1
+	_pop_score(body.global_position, body.SCORE_VALUE * _combo_hits)
 	SCORE_DATA.score += body.SCORE_VALUE * _combo_hits
 	print("Combo: ", _combo_hits, " | Score Gained: ", body.SCORE_VALUE * _combo_hits)
 	body.knockout()

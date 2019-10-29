@@ -15,9 +15,11 @@ func _enter_state(state : int) -> void:
 	match state:
 		States.SPAWN_INTRO:
 			var direction = TargetingSystem.get_direction_to_target()
-			$IntroTween.interpolate_property(self, "position:x", position.x, position.x + 40 * direction,
+			var intro_tween = $IntroTween
+			intro_tween.interpolate_property(self, "position:x", position.x, position.x + 40 * direction,
 					1.5, Tween.TRANS_LINEAR, Tween.EASE_IN_OUT)
-			$IntroTween.start()
+			intro_tween.interpolate_callback(self, 1.5, "_change_state", States.IDLE)
+			intro_tween.start()
 			EnemySprite.scale.x = direction
 		
 		States.IDLE:
@@ -60,6 +62,8 @@ func _exit_state(state : int) -> void:
 		States.SPAWN_INTRO:
 			TargetUpdater.start()
 			$AttackTimer.start()
+			if $IntroTween.is_active():
+				$IntroTween.stop_all()
 		
 		States.ATTACK:
 			TargetUpdater.start()
