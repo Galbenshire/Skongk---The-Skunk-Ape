@@ -1,0 +1,83 @@
+[gd_scene load_steps=6 format=2]
+
+[ext_resource path="res://ui/MainTheme.tres" type="Theme" id=1]
+[ext_resource path="res://menu/main_menu.gd" type="Script" id=2]
+[ext_resource path="res://ui/fonts/PressStart2P/PressStart2P-Regular.ttf" type="DynamicFontData" id=3]
+
+[sub_resource type="DynamicFont" id=1]
+size = 32
+font_data = ExtResource( 3 )
+
+[sub_resource type="Animation" id=2]
+resource_name = "press_start_blink"
+loop = true
+tracks/0/type = "value"
+tracks/0/path = NodePath("PressStart:visible")
+tracks/0/interp = 1
+tracks/0/loop_wrap = true
+tracks/0/imported = false
+tracks/0/enabled = true
+tracks/0/keys = {
+"times": PoolRealArray( 0, 0.5 ),
+"transitions": PoolRealArray( 1, 1 ),
+"update": 1,
+"values": [ true, false ]
+}
+
+[node name="MainMenu" type="Control"]
+anchor_right = 1.0
+anchor_bottom = 1.0
+theme = ExtResource( 1 )
+script = ExtResource( 2 )
+
+[node name="Background" type="ColorRect" parent="."]
+anchor_right = 1.0
+anchor_bottom = 1.0
+color = Color( 0, 0, 0, 1 )
+
+[node name="Title" type="Label" parent="."]
+anchor_left = 0.5
+anchor_right = 0.5
+margin_left = -96.0
+margin_top = 16.0
+margin_right = 96.0
+margin_bottom = 48.0
+custom_fonts/font = SubResource( 1 )
+text = "SKONGK"
+
+[node name="Subtitle" type="Label" parent="."]
+anchor_left = 0.5
+anchor_right = 0.5
+margin_left = -52.0
+margin_top = 56.0
+margin_right = 52.0
+margin_bottom = 64.0
+text = "THE SKUNK APE"
+
+[node name="PressStart" type="Label" parent="."]
+anchor_left = 0.5
+anchor_top = 0.5
+anchor_right = 0.5
+anchor_bottom = 0.5
+margin_left = -52.0
+margin_top = -4.0
+margin_right = 52.0
+margin_bottom = 4.0
+text = "PRESS ENTER"
+align = 1
+valign = 1
+
+[node name="Copyright" type="Label" parent="."]
+anchor_left = 0.5
+anchor_top = 1.0
+anchor_right = 0.5
+anchor_bottom = 1.0
+margin_left = -72.0
+margin_top = -16.0
+margin_right = 72.0
+margin_bottom = -8.0
+text = "© 2019 GALBENSHIRE"
+
+[node name="AnimationPlayer" type="AnimationPlayer" parent="."]
+autoplay = "press_start_blink"
+anims/press_start_blink = SubResource( 2 )
