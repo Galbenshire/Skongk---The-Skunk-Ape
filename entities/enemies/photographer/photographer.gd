@@ -1,6 +1,19 @@
 extends "res://entities/enemies/enemy.gd"
+"""
+Tries to take a picture of Skongk.
+Stuns Skongk, unless they're looking away from the camera.
+"""
+
+const VARIANTS := [
+	preload("res://entities/enemies/photographer/Photographer.png"),
+	preload("res://entities/enemies/photographer/PhotographerAlt.png"),
+	preload("res://entities/enemies/photographer/PhotographerAlt2.png")
+]
 
 onready var FlashHitbox : CollisionPolygon2D = $Sprite/FlashHitbox/Collision
+
+func _ready() -> void:
+	$Sprite.texture = VARIANTS[randi() % 3]
 
 func _can_attack() -> bool:
 	if _current_state != States.IDLE:

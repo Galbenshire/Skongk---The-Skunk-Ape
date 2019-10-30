@@ -42,8 +42,11 @@ func _on_Skongk_power_changed(power : int) -> void:
 func _on_Skongk_asleep():
 	var gui_tween = $GUI/GUITween
 	var game_over_label = $GUI/GameOver
+	var music = $Music
 	
 	gui_tween.interpolate_property(game_over_label, "rect_position:x", game_over_label.rect_position.x,
 			game_over_label.rect_position.x - 180, 1.0, Tween.TRANS_QUAD, Tween.EASE_OUT)
+	gui_tween.interpolate_property(music, "volume_db", -8.0, -50.0, 2.0, Tween.TRANS_SINE, Tween.EASE_IN)
+	gui_tween.interpolate_callback(music, 2.05, "stop")
 	gui_tween.interpolate_callback(self, 4.0, "_end_game")
 	gui_tween.start()

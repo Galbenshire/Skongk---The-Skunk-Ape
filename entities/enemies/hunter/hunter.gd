@@ -1,8 +1,15 @@
 extends "res://entities/enemies/enemy.gd"
 
 const BULLET_SCENE := preload("res://entities/enemies/hunter/bullet/HunterBullet.tscn")
+const VARIANTS := [
+	preload("res://entities/enemies/hunter/Hunter.png"),
+	preload("res://entities/enemies/hunter/HunterAlt.png")
+]
 
 onready var BulletOrigin : Position2D = $Sprite/BulletOrigin
+
+func _ready() -> void:
+	$Sprite.texture = VARIANTS[randi() % 2]
 
 func shoot() -> void:
 	var bullet = BULLET_SCENE.instance()

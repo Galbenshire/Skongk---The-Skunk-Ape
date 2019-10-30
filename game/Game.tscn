@@ -1,30 +1,52 @@
-[gd_scene load_steps=9 format=2]
+[gd_scene load_steps=13 format=2]
 
 [ext_resource path="res://game/game.gd" type="Script" id=1]
-[ext_resource path="res://game/GameBackground.png" type="Texture" id=2]
-[ext_resource path="res://entities/skongk/Skongk.tscn" type="PackedScene" id=3]
-[ext_resource path="res://game/enemy_spawner/EnemySpawner.tscn" type="PackedScene" id=4]
-[ext_resource path="res://ui/hud/HUD.tscn" type="PackedScene" id=5]
-[ext_resource path="res://ui/MainTheme.tres" type="Theme" id=6]
+[ext_resource path="res://game/SwampWater1.png" type="Texture" id=2]
+[ext_resource path="res://game/SwampWater2.png" type="Texture" id=3]
+[ext_resource path="res://game/GameBackground.png" type="Texture" id=4]
+[ext_resource path="res://entities/skongk/Skongk.tscn" type="PackedScene" id=5]
+[ext_resource path="res://game/enemy_spawner/EnemySpawner.tscn" type="PackedScene" id=6]
+[ext_resource path="res://ui/hud/HUD.tscn" type="PackedScene" id=7]
+[ext_resource path="res://ui/MainTheme.tres" type="Theme" id=8]
+[ext_resource path="res://game/music/mega-hyper-ultrastorm-by-kevin-macleod.ogg" type="AudioStream" id=9]
 
-[sub_resource type="RectangleShape2D" id=1]
-extents = Vector2( 144, 8 )
+[sub_resource type="AnimatedTexture" id=1]
+flags = 2
+frames = 2
+fps = 1.0
+frame_0/texture = ExtResource( 2 )
+frame_1/texture = ExtResource( 3 )
+frame_1/delay_sec = 0.0
 
 [sub_resource type="RectangleShape2D" id=2]
+extents = Vector2( 144, 8 )
+
+[sub_resource type="RectangleShape2D" id=3]
 extents = Vector2( 8, 64 )
 
 [node name="Game" type="Node"]
 script = ExtResource( 1 )
 
 [node name="Playfield" type="Node2D" parent="."]
+editor/display_folded = true
+
+[node name="Swamp" type="Sprite" parent="Playfield"]
+position = Vector2( 0, 32 )
+texture = SubResource( 1 )
+centered = false
+region_enabled = true
+region_rect = Rect2( 0, 0, 288, 48 )
 
 [node name="GameBackground" type="Sprite" parent="Playfield"]
-position = Vector2( 144, 128 )
-texture = ExtResource( 2 )
+position = Vector2( 0, 80 )
+texture = ExtResource( 4 )
+centered = false
+region_enabled = true
+region_rect = Rect2( 0, 0, 288, 144 )
 
 [node name="Entities" type="YSort" parent="Playfield"]
 
-[node name="Skongk" parent="Playfield/Entities" instance=ExtResource( 3 )]
+[node name="Skongk" parent="Playfield/Entities" instance=ExtResource( 5 )]
 position = Vector2( 144, 144 )
 
 [node name="Boundaries" type="StaticBody2D" parent="Playfield"]
@@ -33,29 +55,30 @@ collision_mask = 0
 
 [node name="Top" type="CollisionShape2D" parent="Playfield/Boundaries"]
 position = Vector2( 144, 72 )
-shape = SubResource( 1 )
+shape = SubResource( 2 )
 
 [node name="Bottom" type="CollisionShape2D" parent="Playfield/Boundaries"]
 position = Vector2( 144, 216 )
-shape = SubResource( 1 )
+shape = SubResource( 2 )
 
 [node name="Left" type="CollisionShape2D" parent="Playfield/Boundaries"]
 position = Vector2( 0, 144 )
-shape = SubResource( 2 )
+shape = SubResource( 3 )
 
 [node name="Right" type="CollisionShape2D" parent="Playfield/Boundaries"]
 position = Vector2( 288, 144 )
-shape = SubResource( 2 )
+shape = SubResource( 3 )
 
-[node name="EnemySpawner" parent="Playfield" instance=ExtResource( 4 )]
+[node name="EnemySpawner" parent="Playfield" instance=ExtResource( 6 )]
 position = Vector2( 144, 144 )
 spawn_node_path = NodePath("../Entities")
 
 [node name="GUI" type="Control" parent="."]
+editor/display_folded = true
 anchor_right = 1.0
 anchor_bottom = 1.0
 
-[node name="HUD" parent="GUI" instance=ExtResource( 5 )]
+[node name="HUD" parent="GUI" instance=ExtResource( 7 )]
 
 [node name="Ready" type="Label" parent="GUI"]
 anchor_left = 0.5
@@ -67,7 +90,7 @@ margin_top = -7.0
 margin_right = 20.0
 margin_bottom = 7.0
 rect_pivot_offset = Vector2( 20, 7 )
-theme = ExtResource( 6 )
+theme = ExtResource( 8 )
 text = "READY"
 align = 1
 valign = 1
@@ -82,12 +105,17 @@ margin_top = -7.0
 margin_right = 216.0
 margin_bottom = 7.0
 rect_pivot_offset = Vector2( 36, 7 )
-theme = ExtResource( 6 )
+theme = ExtResource( 8 )
 text = "GAME OVER"
 align = 1
 valign = 1
 
 [node name="GUITween" type="Tween" parent="GUI"]
+
+[node name="Music" type="AudioStreamPlayer" parent="."]
+stream = ExtResource( 9 )
+volume_db = -8.0
+autoplay = true
 [connection signal="asleep" from="Playfield/Entities/Skongk" to="." method="_on_Skongk_asleep"]
 [connection signal="awakeness_changed" from="Playfield/Entities/Skongk" to="." method="_on_Skongk_awakeness_changed"]
 [connection signal="power_changed" from="Playfield/Entities/Skongk" to="." method="_on_Skongk_power_changed"]

@@ -22,7 +22,7 @@ _global_script_class_icons={
 
 config/name="Skongk"
 run/main_scene="res://menu/MainMenu.tscn"
-config/icon="res://icon.png"
+config/icon="res://SkongkIcon.png"
 
 [display]
 

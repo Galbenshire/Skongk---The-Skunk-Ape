@@ -78,6 +78,17 @@ margin_right = 72.0
 margin_bottom = -8.0
 text = "© 2019 GALBENSHIRE"
 
+[node name="Copyright2" type="Label" parent="."]
+anchor_left = 0.5
+anchor_top = 1.0
+anchor_right = 0.5
+anchor_bottom = 1.0
+margin_left = -80.0
+margin_top = -64.0
+margin_right = 80.0
+margin_bottom = -56.0
+text = "MADE FOR CRYPTID JAM"
+
 [node name="AnimationPlayer" type="AnimationPlayer" parent="."]
 autoplay = "press_start_blink"
 anims/press_start_blink = SubResource( 2 )

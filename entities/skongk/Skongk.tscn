@@ -18,6 +18,7 @@ height = 96.0
 emission_shape = 2
 emission_box_extents = Vector3( 2, 2, 1 )
 flag_disable_z = true
+angular_velocity = -9.88664e-037
 orbit_velocity = 0.0
 orbit_velocity_random = 0.0
 
@@ -58,6 +59,18 @@ tracks/2/loop_wrap = true
 tracks/2/imported = false
 tracks/2/enabled = true
 tracks/2/keys = {
+"times": PoolRealArray( 0 ),
+"transitions": PoolRealArray( 1 ),
+"update": 1,
+"values": [ false ]
+}
+tracks/3/type = "value"
+tracks/3/path = NodePath("Sprite/SleepParticles:emitting")
+tracks/3/interp = 1
+tracks/3/loop_wrap = true
+tracks/3/imported = false
+tracks/3/enabled = true
+tracks/3/keys = {
 "times": PoolRealArray( 0 ),
 "transitions": PoolRealArray( 1 ),
 "update": 1,
@@ -304,7 +317,6 @@ script = ExtResource( 1 )
 texture = ExtResource( 3 )
 offset = Vector2( 8, -8 )
 hframes = 4
-frame = 3
 
 [node name="PunchHitbox" type="Area2D" parent="Sprite"]
 editor/display_folded = true
