@@ -31,7 +31,7 @@ func _set_up_ready_tween() -> void:
 
 func _end_game() -> void:
 	HUD.save_highscore()
-	get_tree().change_scene("res://menu/MainMenu.tscn")
+	get_tree().change_scene("res://credits/Credits.tscn")
 
 func _on_Skongk_awakeness_changed(awakeness : int) -> void:
 	HUD.update_awakeness(awakeness)
