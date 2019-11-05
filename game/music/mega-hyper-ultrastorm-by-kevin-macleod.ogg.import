@@ -1,0 +1,15 @@
+[remap]
+
+importer="ogg_vorbis"
+type="AudioStreamOGGVorbis"
+path="res://.import/mega-hyper-ultrastorm-by-kevin-macleod.ogg-9f5c8cf5d53f78baebc5f9c4e4bae968.oggstr"
+
+[deps]
+
+source_file="res://game/music/mega-hyper-ultrastorm-by-kevin-macleod.ogg"
+dest_files=[ "res://.import/mega-hyper-ultrastorm-by-kevin-macleod.ogg-9f5c8cf5d53f78baebc5f9c4e4bae968.oggstr" ]
+
+[params]
+
+loop=true
+loop_offset=34.93
